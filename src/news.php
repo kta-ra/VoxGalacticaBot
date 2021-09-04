@@ -1,31 +1,30 @@
 <?php
 //error_reporting(E_ALL);
 
-$token = '';
-$channelId = 0;
+$config = json_decode(file_get_contents(DATA . 'config.json'));
 
 $updates = getUpdates();
 if (!empty($updates)) {
     foreach ($updates as $articleData) {
         if (mb_strlen($articleData['body']) < 20) continue;
         $message = prepareArticle($articleData['title'], $articleData['date'], $articleData['body']);
-        $postResult = postMessage($token, $channelId, $message, [$articleData['pic']]);
-        file_put_contents('./log', "\n\n" . date('d-m-Y H:i:s') . '  ' . $postResult, FILE_APPEND);
+        $postResult = postMessage($config->token, $config->channelId, $message, [$articleData['pic']]);
+        file_put_contents(APP . 'log', "\n\n" . date('d-m-Y H:i:s') . '  ' . $postResult, FILE_APPEND);
         $postResult = json_decode($postResult, true);
         if (isset($postResult['id'])) {
             $messageId = $postResult['id'];
-            crosspostMessage($token, $channelId, $messageId);
+            crosspostMessage($config->token, $config->channelId, $messageId);
         }
     }
 }
-file_put_contents('./data/lastChecked', date('d.m.Y H:i:s'));
+file_put_contents(DATA . 'lastChecked', date('d.m.Y H:i:s'));
 
 function getUpdates(): array {
     $result = [];
-    $lastUpdated = (int) file_get_contents('./lastUpdated');
+    $lastUpdated = (int) file_get_contents(DATA . 'lastUpdated');
     $url = 'https://cms.zaonce.net/ru-RU/jsonapi/node/galnet_article?&sort=-published_at&page[offset]=0&page[limit]=10';
     file_get_contents($url);
-    file_put_contents('./log', "\n\n" . date('d-m-Y H:i:s') . '  ' . file_get_contents($url), FILE_APPEND);
+    file_put_contents(APP . 'log', "\n\n" . date('d-m-Y H:i:s') . '  ' . file_get_contents($url), FILE_APPEND);
     $jsonData = json_decode(file_get_contents($url), true);
     $jsonData['data'] = array_reverse($jsonData['data']);
     foreach ($jsonData['data'] as $article) {
@@ -43,7 +42,7 @@ function getUpdates(): array {
             $lastUpdated = $publishedAt;
         }
     }
-    file_put_contents('./data/lastUpdated', $lastUpdated);
+    file_put_contents(DATA . 'lastUpdated', $lastUpdated);
     return $result;
 }
 
@@ -109,7 +108,7 @@ function sendRequest(string $token, string $url, array $postData = [], array $fi
         $errorMsg = curl_error($ch);
     }
     if (isset($errorMsg)) {
-        file_put_contents('./errorLog', $errorMsg);
+        file_put_contents(APP . 'errorLog', $errorMsg);
     }
     return $out;
 }
