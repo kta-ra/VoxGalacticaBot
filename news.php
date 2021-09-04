@@ -18,7 +18,7 @@ if (!empty($updates)) {
         }
     }
 }
-file_put_contents('./lastChecked', date('d.m.Y H:i:s'));
+file_put_contents('./data/lastChecked', date('d.m.Y H:i:s'));
 
 function getUpdates(): array {
     $result = [];
@@ -43,7 +43,7 @@ function getUpdates(): array {
             $lastUpdated = $publishedAt;
         }
     }
-    file_put_contents('./lastUpdated', $lastUpdated);
+    file_put_contents('./data/lastUpdated', $lastUpdated);
     return $result;
 }
 
