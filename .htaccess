@@ -1,0 +1,9 @@
+  
+  RewriteEngine On
+  
+  RewriteBase /
+  DirectoryIndex index.php
+  
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !public/*
+  RewriteRule ^(.*)$ public/ [NC,L]
