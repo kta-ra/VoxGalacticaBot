@@ -27,6 +27,9 @@ class CurlWrapper {
     /** @var array дополнительные заголовки */
     private $headers = [];
     
+    /** @var bool завершился ли последний запрос ошибкой */
+    private $isError = false;
+    
     /** @var string сообщение об ошибке */
     private $errorMessage = '';
     
@@ -51,11 +54,20 @@ class CurlWrapper {
     /**
     * Отправка get запроса
     * @param string $url
-    * @return string|false
+    * @return array
     */
     public function sendGetRequest(string $url) {
         $this->setOptions($url);
-        return $this->run();
+        $result = $this->run();
+        $resultData = [
+            'success' => !$this->isError
+        ];
+        if ($this->isError) {
+            $resultData['errorMessage'] = $this->errorMessage;
+        } else {
+            $resultData['result'] = $result;
+        }
+        return $resultData;
     }
     
     /**
@@ -87,6 +99,7 @@ class CurlWrapper {
                 curl_setopt($this->handle, CURLOPT_POSTFIELDS, $this->postData);
             }
         }
+        curl_setopt($this->handle, CURLOPT_URL, $url);
     }
     
     /**
@@ -96,7 +109,8 @@ class CurlWrapper {
     private function run() {
         $result = curl_exec($this->handle);
         if (curl_errno($this->handle)) {
-            $this->errorMessage = curl_error($ch);
+            $this->errorMessage = curl_error($this->handle);
+            $this->isError = true;
         }
         return $result;
     }
