@@ -14,6 +14,8 @@ define('APP', realpath('..' . SP) . SP);
 define('DATA', APP . 'data' . SP);
 define('SRC', APP . 'src' . SP);
 
+require_once(SRC . 'loader.php');
+
 if (isset($_POST['update'])) {
     require_once(SRC . 'news.php');
 }
