@@ -10,9 +10,6 @@ class App {
     /** @var state object */
     private $state;
     
-    /** @var CurlWrapper */
-    private $Curl;
-    
     /** @var Logger */
     private $Logger;
     
@@ -31,10 +28,9 @@ class App {
     public function __construct() {
         $this->getConfig();
         $this->getState();
-        $this->Curl = new CurlWrapper();
         $this->Logger = new Logger();
-        $this->EdApi = new EdApi($this->Curl);
-        $this->DiscordApi = new DiscordApi($this->Curl, $this->config->token);
+        $this->EdApi = new EdApi();
+        $this->DiscordApi = new DiscordApi($this->config->token);
     }
     
     /**
@@ -61,7 +57,16 @@ class App {
     public function checkUpdates() {
         $updates = $this->getUpdates();
         if (!empty($updates)) {
-            //
+            foreach ($updates as $articleData) {
+                if (mb_strlen($articleData['body']) < 20) continue;
+                $message = $this->prepareArticle($articleData['title'], $articleData['date'], $articleData['body']);
+                $discordResult = $this->DiscordApi->postMessage($this->config->channelId, $message);
+                $discordResult = json_decode($discordResult, true);
+                if (isset($discordResult['id'])) {
+                    $messageId = $discordResult['id'];
+                    $crosspostResult = $this->DiscordApi->crosspostMessage($this->config->channelId, $messageId);
+                }
+            }
         }
         $this->state->checked = time();
         $this->updateState();
@@ -96,8 +101,51 @@ class App {
     * @return array
     */
     private function getUpdates() {
-        echo '<pre>';
-        //var_dump($this->EdApi->getArticles());
-        var_dump($this->DiscordApi->postMessage($this->config->channelId, 'test message'));
+        $result = [];
+        $articlesFullData = json_decode($this->EdApi->getArticles(), true);
+        $articles = array_reverse($articlesFullData['data']);
+        foreach ($articles as $article) {
+            $createdAt = strtotime($article['attributes']['created']);
+            $isRus = preg_match('/\p{Cyrillic}/u', $article['attributes']['body']['value']);
+            if ($createdAt > $this->state->updated && $isRus) {
+                $articleData = [
+                    'title' => $article['attributes']['title'],
+                    'date' => $article['attributes']['field_galnet_date'],
+                    'body' => $article['attributes']['body']['processed']
+                ];
+                $pic = explode(',', $article['attributes']['field_galnet_image']);
+                $articleData['pic'] = 'https://hosting.zaonce.net/elite-dangerous/galnet/' . $pic[0] . '.png';
+                $result[] = $articleData;
+                $this->state->updated = $createdAt;
+            }
+        }
+        return $result;
     }
+    
+    /**
+    * Оформление статьи для discord
+    * @param string $title
+    * @param string $date Дата новости
+    * @param string $body Тело статьи
+    * @return string
+    */
+    private function prepareArticle(string $title, string $date, string $body): string {
+    $dateFormat = [
+        'JAN' => 'Янв',
+        'FEB' => 'Фев',
+        'MAR' => 'Мар',
+        'APR' => 'Апр',
+        'MAY' => 'Май',
+        'JUN' => 'Июн',
+        'JUL' => 'Июл',
+        'AUG' => 'Авг',
+        'SEP' => 'Сен',
+        'OCT' => 'Окт',
+        'NOV' => 'Ноя',
+        'DEC' => 'Дек'
+    ];
+    $date = strtr($date, $dateFormat);
+    $body = htmlspecialchars_decode(strip_tags(str_replace('<br />', "\n", $body)));
+    return "```fix\n{$title}\n{$date}\n```\n```\n{$body}⠀```\n";
+}
 }
