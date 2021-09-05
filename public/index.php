@@ -15,17 +15,15 @@ define('DATA', APP . 'data' . SP);
 define('SRC', APP . 'src' . SP);
 
 require_once(SRC . 'loader.php');
+$app = new App();
 
 if (isset($_POST['update'])) {
-    require_once(SRC . 'news.php');
+    $app->checkUpdates();
 }
 
-$updated = date('d.m.Y H:i:s', file_get_contents(DATA . 'lastUpdated'));
-$checked = file_get_contents(DATA . 'lastChecked');
-
 $html = '
-    <p>Последнее обновление: '.$updated.'</p>
-    <p>Последняя проверка: '.$checked.'</p>
+    <p>Последнее обновление: ' . $app->updated . '</p>
+    <p>Последняя проверка: ' . $app->checked . '</p>
     <form method="post">
         <input type="submit" name="update" value="Проверить обновление">
     </form>
