@@ -1,4 +1,4 @@
-<?php namespace Ednews\Api;
+<?php namespace Api;
 
 /**
  * Запрос к api

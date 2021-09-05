@@ -1,6 +1,6 @@
 <?php namespace Ednews;
 
-use Ednews\Api\ApiRequest as Request;
+use Api\ApiRequest as Request;
 
 class DiscordApi {
     /** @var string Базовый путь api */
