@@ -76,11 +76,11 @@ class CurlWrapper {
     * Отправка post запроса
     * @param string $url
     * @param array $headers заголовки запроса
-    * @param array $postData данные для post запроса
+    * @param string $postData данные для post запроса
     * @param array $files файлы для post запроса
     * @return string|false
     */
-    public function sendPostRequest(string $url, array $headers = [], array $postData = [], array $files = []) {
+    public function sendPostRequest(string $url, array $headers = [], string $postData = '', array $files = []) {
         $this->headers = $headers;
         $this->postData = $postData;
         $this->files = $files;
@@ -97,7 +97,7 @@ class CurlWrapper {
     private function setOptions(string $url, bool $isPost = false) {
         curl_setopt_array($this->handle, $this->options);
         if (!empty($this->headers)) {
-            curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($this->handle, CURLOPT_HTTPHEADER, $this->headers);
         }
         if ($isPost) {
             curl_setopt_array($this->handle, $this->postOptions);

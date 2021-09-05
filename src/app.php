@@ -11,16 +11,16 @@ class App {
     private $state;
     
     /** @var CurlWrapper */
-    private $curl;
+    private $Curl;
     
     /** @var Logger */
-    private $logger;
+    private $Logger;
     
     /** @var EdApi */
-    private $edApi;
+    private $EdApi;
     
     /** @var DiscordApi */
-    private $discordApi;
+    private $DiscordApi;
     
     /**
     * Конструктор
@@ -31,10 +31,10 @@ class App {
     public function __construct() {
         $this->getConfig();
         $this->getState();
-        $this->curl = new CurlWrapper();
+        $this->Curl = new CurlWrapper();
         $this->Logger = new Logger();
-        $this->EdApi = new EdApi($this->curl);
-        //$this->discordApi = new DiscordApi();
+        $this->EdApi = new EdApi($this->Curl);
+        $this->DiscordApi = new DiscordApi($this->Curl, $this->config->token);
     }
     
     /**
@@ -97,6 +97,7 @@ class App {
     */
     private function getUpdates() {
         echo '<pre>';
-        var_dump($this->EdApi->getArticles());
+        //var_dump($this->EdApi->getArticles());
+        var_dump($this->DiscordApi->postMessage($this->config->channelId, 'test message'));
     }
 }
