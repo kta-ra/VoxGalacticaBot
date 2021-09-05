@@ -54,9 +54,11 @@ class CurlWrapper {
     /**
     * Отправка get запроса
     * @param string $url
+    * @param array $headers заголовки запроса
     * @return array
     */
-    public function sendGetRequest(string $url) {
+    public function sendGetRequest(string $url, array $headers = []) {
+        $this->headers = $headers;
         $this->setOptions($url);
         $result = $this->run();
         $resultData = [
@@ -73,9 +75,13 @@ class CurlWrapper {
     /**
     * Отправка post запроса
     * @param string $url
+    * @param array $headers заголовки запроса
+    * @param array $postData данные для post запроса
+    * @param array $files файлы для post запроса
     * @return string|false
     */
-    public function sendPostRequest(string $url, array $postData = [], array $files = []) {
+    public function sendPostRequest(string $url, array $headers = [], array $postData = [], array $files = []) {
+        $this->headers = $headers;
         $this->postData = $postData;
         $this->files = $files;
         $this->setOptions($url, true);
