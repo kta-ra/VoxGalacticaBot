@@ -22,9 +22,9 @@ class EdApi {
     /**
      * Получение данных последних статей
      * @var int|null $limit
-     * @return array
+     * @return string
      */
-    public function getArticles(int $limit = NULL) {
+    public function getArticles(int $limit = NULL): string {
         if (!is_null($limit)) $this->requestData['page']['limit'] = $limit;
         $url = $this->buildRequestUrl();
         $request = new Request();
@@ -32,9 +32,7 @@ class EdApi {
                 ->setUrl($url)
                 ->run();
         if ($request->isSuccess()) {
-            $result = json_decode($request->getResult(), true);
-            $result['data'] = array_reverse($result['data']); //статьи от старых к новым
-            return $result;
+            return $request->getResult();
         } else {
             return $request->getError();
         }
@@ -44,7 +42,7 @@ class EdApi {
      * Построение url для запроса
      * @return string
      */
-    private function buildRequestUrl() {
+    private function buildRequestUrl(): string {
         return $this->baseUrl . '?' . http_build_query($this->requestData);
     }
 }
