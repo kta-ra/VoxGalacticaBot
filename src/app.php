@@ -1,5 +1,8 @@
 <?php namespace Ednews;
 
+use Api\EdApi as EdApi;
+use Api\DiscordApi as DiscordApi;
+
 /**
  * Основной класс приложения
  */
