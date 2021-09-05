@@ -1,5 +1,9 @@
 <?php namespace Ednews;
 
+/**
+ * Основной класс приложения
+ */
+
 class App {
     /** @var config object */
     private $config;
