@@ -1,15 +1,17 @@
 <?php namespace Ednews;
 
-class EdApi extends Api {
+use Api\ApiRequest as Request;
+
+class EdApi {
     /**
      * @var string Базовый путь api
      */
-    protected $baseUrl = 'https://cms.zaonce.net/ru-RU/jsonapi/node/galnet_article/';
+    private $baseUrl = 'https://cms.zaonce.net/ru-RU/jsonapi/node/galnet_article/';
     
     /**
      * @var array Данные запроса
      */
-    protected $requestData = [
+    private $requestData = [
         'sort' => '-published_at',
         'page' => [
             'offset' => 0,
@@ -23,17 +25,25 @@ class EdApi extends Api {
      * @return array
      */
     public function getArticles(int $limit = NULL) {
-        $result = [];
         if (!is_null($limit)) $this->requestData['page']['limit'] = $limit;
         $url = $this->buildRequestUrl();
-        $resultData = $this->curl->sendGetRequest($url);
-        if ($resultData['success']) {
-            $resultData['result'] = json_decode($resultData['result']);
-            $resultData['result']['data'] = array_reverse($resultData['result']['data']); //статьи от старых к новым
+        $request = new Request();
+        $request->setMode('get')
+                ->setUrl($url)
+                ->run();
+        if ($request->isSuccess()) {
+            $result = json_decode($request->getResult(), true);
+            $result['data'] = array_reverse($result['data']); //статьи от старых к новым
+            return $result;
+        } else {
+            return $request->getError();
         }
-        return $resultData;
     }
     
+    /**
+     * Построение url для запроса
+     * @return string
+     */
     private function buildRequestUrl() {
         return $this->baseUrl . '?' . http_build_query($this->requestData);
     }
