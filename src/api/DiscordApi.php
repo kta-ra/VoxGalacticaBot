@@ -1,6 +1,4 @@
-<?php namespace Ednews;
-
-use Api\ApiRequest as Request;
+<?php namespace Api;
 
 class DiscordApi {
     /** @var string Базовый путь api */
@@ -27,7 +25,7 @@ class DiscordApi {
     public function postMessage(int $channelId, string $message, array $files = []): string {
         $url = $this->baseUrl . "channels/$channelId/messages";
         $postData = ['content' => $message];
-        $request = new Request();
+        $request = new ApiRequest();
         $request->setMode('post')
                 ->setPostData($postData)
                 ->setUrl($url)
@@ -48,7 +46,7 @@ class DiscordApi {
     */
     public function crosspostMessage(int $channelId, int $messageId): string {
         $url = $this->baseUrl . "channels/$channelId/messages/$messageId/crosspost";
-        $request = new Request();
+        $request = new ApiRequest();
         $request->setMode('post')
                 ->setUrl($url)
                 ->setAuthString('Bot ' . $this->token)

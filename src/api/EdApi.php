@@ -1,6 +1,4 @@
-<?php namespace Ednews;
-
-use Api\ApiRequest as Request;
+<?php namespace Api;
 
 class EdApi {
     /**
@@ -27,7 +25,7 @@ class EdApi {
     public function getArticles(int $limit = NULL): string {
         if (!is_null($limit)) $this->requestData['page']['limit'] = $limit;
         $url = $this->buildRequestUrl();
-        $request = new Request();
+        $request = new ApiRequest();
         $request->setMode('get')
                 ->setUrl($url)
                 ->run();
