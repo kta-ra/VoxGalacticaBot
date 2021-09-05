@@ -3,13 +3,15 @@
 /**
  * Основной класс приложения
  */
-
 class App {
     /** @var config object */
     private $config;
     
     /** @var state object */
     private $state;
+    
+    /** @var CurlWrapper */
+    private $curl;
     
     /** @var Logger */
     private $logger;
@@ -24,13 +26,14 @@ class App {
     * Конструктор
     * Загрузка конфига и состояния приложения
     * Иницализация объектов Logger, EdApi, DiscordApi
-    * @return void
+    * @return App
     */
     public function __construct() {
         $this->getConfig();
-        $this->getState();        
-        $this->logger = new Logger();
-        //$this->edApi = new EdApi();
+        $this->getState();
+        $this->curl = new CurlWrapper();
+        $this->Logger = new Logger();
+        $this->EdApi = new EdApi($this->curl);
         //$this->discordApi = new DiscordApi();
     }
     
@@ -88,7 +91,12 @@ class App {
         file_put_contents(DATA . 'state.json', json_encode($this->state, JSON_PRETTY_PRINT));
     }
     
+    /**
+    * Получение новых статей
+    * @return array
+    */
     private function getUpdates() {
-        //
+        echo '<pre>';
+        var_dump($this->EdApi->getArticles());
     }
 }
