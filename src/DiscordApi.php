@@ -1,43 +1,62 @@
 <?php namespace Ednews;
 
-class DiscordApi extends Api {
-    /**
-     * @var string Базовый путь api
-     */
-    protected $baseUrl = 'https://discord.com/api/';
+use Ednews\Api\ApiRequest as Request;
+
+class DiscordApi {
+    /** @var string Базовый путь api */
+    private $baseUrl = 'https://discord.com/api/';
     
-    /**
-     * @var array Данные запроса
-     */
-    protected $requestData = [
-        'token' => ''
-    ];
+    /** @var string Токен приложения discord */
+    private $token;
     
     /**
     * Конструктор
-    * @param CurlWrapper $curl
     * @param string $token токен приложения discord
-    * @return Api
     */
-    public function __construct(CurlWrapper $curl, string $token) {
-        $this->requestData['token'] = $token;
-        parent::__construct($curl);
-    } 
+    public function __construct(string $token) {
+        $this->token = $token;
+    }
     
+    /**
+    * Отправка сообщения на канал
+    * @param int $channelId
+    * @param string $message
+    * @param array $files
+    * @return string Json результат или строка ошибки !TODO
+    */
     public function postMessage(int $channelId, string $message, array $files = []): string {
         $url = $this->baseUrl . "channels/$channelId/messages";
         $postData = ['content' => $message];
-        $dataString = json_encode($postData);
-        $headers = [
-            'Content-Type: application/json',
-            'Authorization: Bot ' . $this->requestData['token'],
-            'Content-Length: ' . strlen($dataString)
-        ];
-        return $this->curl->sendPostRequest($url, $headers, $dataString);
+        $request = new Request();
+        $request->setMode('post')
+                ->setPostData($postData)
+                ->setUrl($url)
+                ->setAuthString('Bot ' . $this->token)
+                ->run();
+        if ($request->isSuccess()) {
+            return $request->getResult();
+        } else {
+            return $request->getError();
+        }
     }
     
-    function crosspostMessage(string $token, int $channelId, int $messageId): string {
-    $url = "https://discord.com/api/channels/$channelId/messages/$messageId/crosspost";
-    return sendRequest($token, $url);
-}
+    /**
+    * Публикация сообщения на канале (cross-posting)
+    * @param int $channelId
+    * @param int $messageId
+    * @return string Json результат или строка ошибки !TODO
+    */
+    public function crosspostMessage(int $channelId, int $messageId): string {
+        $url = $this->baseUrl . "channels/$channelId/messages/$messageId/crosspost";
+        $request = new Request();
+        $request->setMode('post')
+                ->setUrl($url)
+                ->setAuthString('Bot ' . $this->token)
+                ->run();
+        if ($request->isSuccess()) {
+            return $request->getResult();
+        } else {
+            return $request->getError();
+        }
+    }
 }
