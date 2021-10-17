@@ -1,7 +1,7 @@
-<?php namespace Ednews;
+<?php namespace KtaraDev\EdNews;
 
-use Api\EdApi as EdApi;
-use Api\DiscordApi as DiscordApi;
+use KtaraDev\EdNews\Api\EdApi;
+use KtaraDev\EdNews\Api\DiscordApi;
 
 /**
  * Основной класс приложения
@@ -21,6 +21,7 @@ class App {
     
     /** @var DiscordApi */
     private $DiscordApi;
+
     
     /**
     * Конструктор
@@ -31,7 +32,7 @@ class App {
     public function __construct() {
         $this->getConfig();
         $this->getState();
-        $this->Logger = new Logger();
+        //$this->Logger = new Logger();
         $this->EdApi = new EdApi();
         $this->DiscordApi = new DiscordApi($this->config->token);
     }

@@ -1,4 +1,4 @@
-<?php namespace Api;
+<?php namespace KtaraDev\EdNews\Api;
 
 class EdApi {
     /**

@@ -1,0 +1,16 @@
+{
+    "name": "ktara-dev/ed-news",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "KtaraDev\\EdNews\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ekaterina Denisova",
+            "email": "ktaris@ya.ru"
+        }
+    ],
+    "require": {}
+}
