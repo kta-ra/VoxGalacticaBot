@@ -1,18 +1,15 @@
-<?php namespace KtaraDev\EdNews;
-\error_reporting(E_ALL);
-\ini_set('error_reporting', E_ALL);
+<?php namespace KtaraDev\VoxGalacticaBot;
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 date_default_timezone_set('Etc/GMT-3');
 mb_internal_encoding("UTF-8");
 
-define('SP', DIRECTORY_SEPARATOR);
-define('APP', realpath('..' . SP) . SP);
-define('DATA', APP . 'data' . SP);
-//define('SRC', APP . 'src' . SP);
-
-require APP . 'vendor/autoload.php';
+require realpath('..')  . DIRECTORY_SEPARATOR . 'src/Debug.php';
+require realpath('..')  . DIRECTORY_SEPARATOR . 'src/Loader.php';
 
 $app = new App();
+/*
 
 $html = '
     <p>Последнее обновление: ' . $app->updated . '</p>
@@ -31,3 +28,4 @@ if (isset($_POST['send'])) {
 
 header('Content-Type: text/html; charset=utf-8');
 echo $html;
+*/
