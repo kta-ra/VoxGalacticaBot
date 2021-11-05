@@ -1,5 +1,7 @@
 <?php
 return [
     'token' => '',
-    'channelId' => 0
+    'channels' => [
+        0 => true
+    ]
 ];
