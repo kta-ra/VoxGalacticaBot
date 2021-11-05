@@ -10,8 +10,8 @@ use KtaraDev\VoxGalacticaBot\Helper\CurlHelper;
 class DiscordApi {
     const BASE_URL = 'https://discord.com/api/';
 
-    /** @var array */
-    private $config;
+    /** @var string */
+    private $token;
 
     /** @var CurlHelper */
     private $curl;
@@ -19,18 +19,12 @@ class DiscordApi {
     /** @var array */
     private $authData;
 
-    public function __construct()
+    public function __construct(string $token)
     {
-        $this->loadConfig();
+        $this->token = $token;
         $this->curl = new CurlHelper();
         $this->authData = ['bot' => $this->config['token']];
         $this->curl->setAuthData($this->authData);
-    }
-
-    private function loadConfig()
-    {
-        $path = ROOT_DIR . 'config' . SP . 'discord.php';
-        $this->config = include($path);
     }
 
     public function getChannelInfo(int $channelId)
