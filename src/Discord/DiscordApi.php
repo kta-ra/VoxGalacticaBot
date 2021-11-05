@@ -23,7 +23,7 @@ class DiscordApi {
     {
         $this->token = $token;
         $this->curl = new CurlHelper();
-        $this->authData = ['bot' => $this->config['token']];
+        $this->authData = ['bot' => $this->token];
         $this->curl->setAuthData($this->authData);
     }
 
